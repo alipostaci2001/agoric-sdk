@@ -13,7 +13,7 @@ import { decodeToJustin } from '../src/marshal-justin';
  * that has the same encoding.
  */
 export const jsonPairs = harden([
-  // Justin is the same as the JSON encoding but with unnecessary quoting
+  // Justin is the same as the JSON encoding but without unnecessary quoting
   ['[1,2]', '[1,2]'],
   ['{"foo":1}', '{foo:1}'],
   ['{"a":1,"b":2}', '{a:1,b:2}'],
@@ -45,15 +45,15 @@ export const jsonPairs = harden([
   ['{"__proto__":8}', '{["__proto__"]:8}'],
 
   // The Hilbert Hotel is always tricky
-  ['{"@qclass":"hilbert","original":8}', '{["@qclass"]:8}'],
-  ['{"@qclass":"hilbert","original":"@qclass"}', '{["@qclass"]:"@qclass"}'],
+  ['{"@qclass":"hilbert","original":8}', '{"@qclass":8}'],
+  ['{"@qclass":"hilbert","original":"@qclass"}', '{"@qclass":"@qclass"}'],
   [
     '{"@qclass":"hilbert","original":{"@qclass":"hilbert","original":8}}',
-    '{["@qclass"]:{["@qclass"]:8}}',
+    '{"@qclass":{"@qclass":8}}',
   ],
   [
     '{"@qclass":"hilbert","original":{"@qclass":"hilbert","original":8,"rest":{"foo":"foo1"}},"rest":{"bar":{"@qclass":"hilbert","original":{"@qclass":"undefined"}}}}',
-    '{["@qclass"]:{["@qclass"]:8,...{foo:"foo1"}},...{bar:{["@qclass"]:undefined}}}',
+    '{"@qclass":{"@qclass":8,...{foo:"foo1"}},...{bar:{"@qclass":undefined}}}',
   ],
 ]);
 

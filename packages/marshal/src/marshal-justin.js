@@ -207,7 +207,7 @@ const decodeToJustin = (encoding, _cyclePolicy, shouldIndent) => {
           );
           out.open('{');
           out.line();
-          out.next(`[${quote(QCLASS)}]:`);
+          out.next(`${quote(QCLASS)}:`);
           recur(original);
           if ('rest' in rawTree) {
             assert(rest !== undefined, X`Rest encoding must not be undefined`);
