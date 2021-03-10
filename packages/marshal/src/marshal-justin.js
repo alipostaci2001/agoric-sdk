@@ -54,11 +54,11 @@ const makeYesIndenter = () => {
  * separated by whitespace to preserve their meaning. Otherwise the
  * whitespace in unnecessary.
  *
- * Note that the `--` case also prevents the accidental formation of an
+ * The `<!` and `->` cases prevent the accidental formation of an
  * html-like comment. I don't think the double angle brackets are actually
  * needed but I haven't thought about it enough to remove them.
  */
-const badPairPattern = /^(?:\w\w|<<|>>|\+\+|--)$/;
+const badPairPattern = /^(?:\w\w|<<|>>|\+\+|--|<!|->)$/;
 
 /**
  * Minimum whitespace needed to preseve meaning.
