@@ -6,6 +6,6 @@
  * @returns {Set<T>}
  * @template T
  */
-export function makeFlexSet() {
-  return new Set();
+export function makeFlexSet(iterable = undefined) {
+  return new Set(iterable);
 }
