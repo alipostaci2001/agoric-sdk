@@ -51,7 +51,8 @@
     "@agoric/notifier": "^0.3.2",
     "@agoric/promise-kit": "^0.2.2",
     "@agoric/same-structure": "^0.1.2",
-    "@agoric/store": "^0.4.2"
+    "@agoric/store": "^0.4.2",
+    "lib-jessie": "^0.2.0"
   },
   "devDependencies": {
     "@agoric/bundle-source": "^1.2.2",

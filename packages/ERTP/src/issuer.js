@@ -10,12 +10,12 @@ import { E } from '@agoric/eventual-send';
 import { Far } from '@agoric/marshal';
 import { makeNotifierKit } from '@agoric/notifier';
 import { isPromise } from '@agoric/promise-kit';
+import { makeSet } from 'lib-jessie';
 
 import { amountMath, MathKind } from './amountMath';
 import { makeAmountMath } from './deprecatedAmountMath';
 import { makeFarName, ERTPKind } from './interfaces';
 import { coerceDisplayInfo } from './displayInfo';
-import { makeFlexSet } from './collections';
 
 import './types';
 
@@ -171,7 +171,7 @@ function makeIssuerKit(
 
     if (payments.length > 1) {
       /** @type {Set<Payment>} */
-      const paymentSet = makeFlexSet();
+      const paymentSet = makeSet();
       payments.forEach(payment => {
         if (paymentSet.has(payment)) {
           throw Error('same payment seen twice');
