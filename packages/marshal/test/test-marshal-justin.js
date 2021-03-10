@@ -53,7 +53,7 @@ export const jsonPairs = harden([
   ],
   [
     '{"@qclass":"hilbert","original":{"@qclass":"hilbert","original":8,"rest":{"foo":"foo1"}},"rest":{"bar":{"@qclass":"hilbert","original":{"@qclass":"undefined"}}}}',
-    '{"@qclass":{"@qclass":8,...{foo:"foo1"}},...{bar:{"@qclass":undefined}}}',
+    '{"@qclass":{"@qclass":8,foo:"foo1"},bar:{"@qclass":undefined}}',
   ],
 ]);
 

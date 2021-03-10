@@ -58,7 +58,7 @@ const makeYesIndenter = () => {
  * html-like comment. I don't think the double angle brackets are actually
  * needed but I haven't thought about it enough to remove them.
  */
-const badPairPattern = /\w\w|<<|>>|\+\+|--/;
+const badPairPattern = /^(?:\w\w|<<|>>|\+\+|--)$/;
 
 /**
  * Minimum whitespace needed to preseve meaning.
@@ -104,7 +104,7 @@ const finishIbid = _rawTree => {
   // doesn't do anything yet.
 };
 
-const identPattern = /[a-zA-Z]\w*/;
+const identPattern = /^[a-zA-Z]\w*$/;
 
 /**
  * @param {Encoding} encoding
@@ -116,6 +116,25 @@ const decodeToJustin = (encoding, _cyclePolicy, shouldIndent) => {
   // const ibidTable = makeReviverIbidTable(cyclePolicy);
   const makeIndenter = shouldIndent ? makeYesIndenter : makeNoIndenter;
   const out = makeIndenter();
+
+  const decodeProperty = (name, value) => {
+    out.line();
+    assert.typeof(name, 'string', X`Property name ${name} of must be a string`);
+    if (name === '__proto__') {
+      // JavaScript interprets `{__proto__: x, ...}`
+      // as making an object inheriting from `x`, whereas
+      // in JSON it is simply a property name. Preserve the
+      // JSON meaning.
+      out.next(`["__proto__"]:`);
+    } else if (identPattern.test(name)) {
+      out.next(`${name}:`);
+    } else {
+      out.next(`${quote(name)}:`);
+    }
+    // eslint-disable-next-line no-use-before-define
+    recur(value);
+    out.next(',');
+  };
 
   /**
    * Modeled after `fullRevive` in marshal.js
@@ -206,15 +225,28 @@ const decodeToJustin = (encoding, _cyclePolicy, shouldIndent) => {
             X`Invalid Hilbert Hotel encoding ${rawTree}`,
           );
           out.open('{');
-          out.line();
-          out.next(`${quote(QCLASS)}:`);
-          recur(original);
+          decodeProperty(QCLASS, original);
           if ('rest' in rawTree) {
-            assert(rest !== undefined, X`Rest encoding must not be undefined`);
-            out.next(',');
-            out.line();
-            out.next('...');
-            recur(rest);
+            assert.typeof(
+              rest,
+              'object',
+              X`Rest ${rest} encoding must be an object`,
+            );
+            assert(rest !== null, X`Rest ${rest} encoding must not be null`);
+            assert(
+              !Array.isArray(rest),
+              X`Rest ${rest} encoding must not be an array`,
+            );
+            assert(
+              !(QCLASS in rest),
+              X`Rest encoding ${rest} must not contain ${q(QCLASS)}`,
+            );
+            startIbid(rest);
+            const names = ownKeys(rest);
+            for (const name of names) {
+              decodeProperty(name, rest[name]);
+            }
+            finishIbid(rest);
           }
           finishIbid(rawTree);
           return out.close('}');
@@ -249,25 +281,7 @@ const decodeToJustin = (encoding, _cyclePolicy, shouldIndent) => {
       } else {
         out.open('{');
         for (const name of names) {
-          assert.typeof(
-            name,
-            'string',
-            X`Property ${name} of ${rawTree} must be a string`,
-          );
-          out.line();
-          if (name === '__proto__') {
-            // JavaScript interprets `{__proto__: x, ...}`
-            // as making an object inheriting from `x`, whereas
-            // in JSON it is simply a property name. Preserve the
-            // JSON meaning.
-            out.next(`["__proto__"]:`);
-          } else if (identPattern.test(name)) {
-            out.next(`${name}:`);
-          } else {
-            out.next(`${quote(name)}:`);
-          }
-          recur(rawTree[name]);
-          out.next(',');
+          decodeProperty(name, rawTree[name]);
         }
         finishIbid(rawTree);
         return out.close('}');
